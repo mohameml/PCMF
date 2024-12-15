@@ -11,11 +11,15 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 # Find Protobuf installation
 # Must use the CONFIG mode
-block()
-    set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
-    find_package(Protobuf REQUIRED)
-endblock()
+# block()
+#     set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
+#     find_package(Protobuf REQUIRED)
+# endblock()
+# message(STATUS "Using protobuf ${Protobuf_VERSION}")
+option(protobuf_MODULE_COMPATIBLE TRUE)
+find_package(Protobuf CONFIG REQUIRED)
 message(STATUS "Using protobuf ${Protobuf_VERSION}")
+
 
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
 set(_REFLECTION gRPC::grpc++_reflection)
@@ -42,10 +46,10 @@ add_custom_command(
     OUTPUT "${pricer_proto_srcs}" "${pricer_proto_hdrs}" "${pricer_grpc_srcs}" "${pricer_grpc_hdrs}"
     COMMAND ${_PROTOBUF_PROTOC}
     ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
-      --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
-      -I "${pricer_proto_path}"
-      --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
-      "${pricer_proto}"
+    --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
+    -I "${pricer_proto_path}"
+    --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
+    "${pricer_proto}"
     DEPENDS "${pricer_proto}"
 )
 
