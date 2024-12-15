@@ -1,11 +1,203 @@
 @startuml archi
 
-package HedginigEngine {
+
+
+package Convertisseur {
+    interface IConvertisseurFile {
+        + protected abstract string Chemin
+    }
+
+    class CsvToListDataFeed {
+        + List<DataFeed> ConverteCSVToListDataFeed()
+    }
+
+    class JsonToTestParams {
+        + ConverteJSONToParameters()
+    }
+
+    class ListOuputToJson  {
+        + ConverteListOuputToJSON()
+    }
+
+    CsvToListDataFeed <|-- IConvertisseurFile 
+    JsonToTestParams <|-- IConvertisseurFile 
+    ListOuputToJson <|-- IConvertisseurFile 
+}
+
+
+package MultiCashFlowCommon  {
+
+    class DataFeed {
+        +  Dictionary<string, double> PriceList 
+        + DateTime Date 
+    }
+
+    class OutputData {
+        + DateTime Date
+        + double Value
+        + Double[] Deltas
+        +  Double[] DeltasStdDev
+        +  double Price
+        + double PriceStdDev
+    }
+
+    class TestParameters {
+
+    }
 
 }
+
+
+package HedginigEngine {
+    class Portfolio {
+        + Double Cash 
+        + Dictionary<string, double> Compositions
+        + DateTime date 
+        + void UpdateCompo(Dictionary<string, double> Compos ,  DataFeed feed)
+        + double GetPortfolioValue(DataFeed feed)
+    }
+
+
+    class Pricer {
+        + GrpcPricingClient Client 
+        + double price 
+        + double[] deltas 
+        + double priceStdDev 
+        + double[] deltasStdDev
+        + PriceAndDeltas(DataFeed[] past , bool monitoringDateReached , DataTime time ) : Client.GrpcClient.PriceAndDeltas(pricingInput)    
+        + CastingListDataFeedToPastLines()
+    }
+
+    class GrpcPricingClient {
+        +  GrpcChannel Channel 
+        + GrpcPricerClient GrpcClient
+        + GrpcPricingClient(string address) : GrpcClient = new GrpcPricer.GrpcPricerClient(Channel);    
+    }
+
+    Pricer o-- GrpcPricingClient
+
+    abstract class  Rebalacing  {
+        + bool IsRebalancing(DateTime date)
+    }
+
+    class FixedRebalacing {
+        - int Count 
+        - int Periode 
+        + override bool IsRebalancing(DateTime date)
+    }
+
+    Rebalacing <|-- FixedRebalacing
+
+    class Hedging {
+        + TestParameters Params 
+        + Pricer Pricer 
+        + Rebalacing DetectRebalacing
+        + List<DataFeed> MarketData 
+
+        + List<OutputData> Hedge()
+    }
+
+    Hedging o-- Pricer 
+    Hedging o-- Portfolio 
+    Hedging o-- Rebalacing 
+
+
+}
+
+
+package Grpc {
+
+    class GrpcPricer {
+        + PricingOutput PriceAndDeltas(PricingInput)
+    }
+
+    class PricingInput {
+        + PastLines[] past 
+        + bool monitoringDateReached
+        + double time 
+    }
+
+    class PastLines {
+        + double[] value 
+    }
+
+    class PricingOutput {
+        + double price 
+        + double[] deltas 
+        + double priceStdDev 
+        + double[] deltasStdDev
+    }
+
+    GrpcPricer o-- PricingInput 
+    GrpcPricer o-- PricingOutput 
+
+    PricingInput o-- PastLines 
+
+
+}
+
+
 
 package PricerEngine {
     
+    class PrcingServer {
+        + GrpcPricerImpl service
+        + RunServer(nlohmann::json &jsonParams)
+
+    }
+
+    class GrpcPricerImpl {
+        + BlackScholesPricer &pricer
+        +  Status PriceAndDeltas(ServerContext *context, const PricingInput *input, PricingOutput *output) override 
+        +  Status Heartbeat(ServerContext *context, const Empty* input, ReqInfo *output) override
+        + PnlMat* convertPastToPnlMat(const PricingInput *input)
+    }
+
+
+    class BlackScholesPricer {
+        + PnlMat *volatility;
+        + PnlVect *paymentDates;
+        + PnlVect *strikes;
+        + int nAssets;
+        + double interestRate;
+        + double fdStep;
+        + int nSamples;
+        + void priceAndDeltas();
+    }
+
+    class BlackScholesModel {
+
+    }
+
+    abstract class Option {
+
+    }
+
+    class ConditionalBasketOption {
+
+    }
+
+    class ConditionalMaxOption {
+
+    }
+
+    BlackScholesPricer o-- BlackScholesModel
+    BlackScholesPricer o-- Option
+    PrcingServer o-- GrpcPricerImpl
+    GrpcPricerImpl o-- BlackScholesPricer
+    Option <|-- ConditionalBasketOption
+    Option <|-- ConditionalMaxOption
+
+    
 }
+
+
+Convertisseur -- MultiCashFlowCommon : Conversion des données JSON et CSV vers des classes de MultiCashFlowCommon 
+
+HedginigEngine -- MultiCashFlowCommon 
+
+GrpcPricingClient -- Grpc : Grpc Client 
+
+PrcingServer -- Grpc : Grpc Server 
 
 @enduml
