@@ -21,7 +21,7 @@ namespace HedgingEngine {
 
             }
 
-            if (!File.Exists(args[0]) || !File.Exists(args[1]) || !File.Exists(args[2]))
+            if (!File.Exists(args[0]) || !File.Exists(args[1]) )
             {
                 Console.WriteLine("Chemin non valide passe en args");
                 Environment.Exit(1);
@@ -37,6 +37,7 @@ namespace HedgingEngine {
 
             string jsonString = File.ReadAllText(args[0]); 
             TestParameters financialParam = JsonIO.FromJson(jsonString);
+
 
             Hedging.Hedging hedger = new(financialParam);
             List<OutputData> listOutput = hedger.Hedge(data);

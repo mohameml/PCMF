@@ -12,6 +12,7 @@ namespace HedgingEngine.Hedging {
     public class Hedging {
 
         TestParameters FinancialParam {get ; init ;} 
+        
         Pricer Pricer {get ; init ;}
         Rebalancing.Rebalancing OracleRebalacing {get ; init ;}   
 
