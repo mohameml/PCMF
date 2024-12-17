@@ -9,18 +9,17 @@
 class BlackScholesModel
 {
 public:
-    int model_size;       /// nombre d'actifs du modèle
-    double interest_rate; /// taux d'intérêt
-    double correlation;   /// paramètre de corrélation
-    PnlVect *volatility;  /// vecteur de volatilités
-    PnlVect *spots;       /// valeurs initiales des sous-jacents
-    PnlMat *L;            /// raccine carrée de matrice de corrélation
-    PnlVect paymentDates;
+    int nAssets;       /// nombre d'actifs du modèle
+    double interestRate; /// taux d'intérêt
+    PnlMat *volatility;  /// vecteur de volatilités
+    // PnlVect *spots;       /// valeurs initiales des sous-jacents
     PnlVect *G;           /// Vector for simulation
+    PnlVect *paymentDates;
+    PnlVect *vectVol;
 
 public:
     BlackScholesModel();
-    BlackScholesModel(const nlohmann::json json);
+    BlackScholesModel(const nlohmann::json &jsonParams);
     ~BlackScholesModel();
 
     /**
@@ -32,6 +31,7 @@ public:
      * @param[in] rng : génerateur des nombres aléatoires
      */
     void asset(PnlMat *path, PnlRng *rng);
+    void asset(const PnlMat *past, double t, bool isMonitoringDate, PnlMat *path, PnlRng *rng);
 
     /**
      * Génère une trajectoire du modèle et la stocke dans path (simulation conditionnelle)
@@ -54,7 +54,7 @@ public:
      * @param[in] h : double
      * @param[in] original_paths : matrice de taille (N + 1)*D qui contient la simulation du modéle
      */
-    void shift_asset(int d, double h, PnlMat *original_paths);
-    void shift_asset(int d, double t, double h, PnlMat *original_paths);
+    // void shift_asset(int d, double h, PnlMat *original_paths);
+    // void shift_asset(int d, double t, double h, PnlMat *original_paths);
 };
 #endif

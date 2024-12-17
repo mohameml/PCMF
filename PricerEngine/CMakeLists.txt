@@ -92,6 +92,15 @@ target_link_libraries(pricing_server
 )
 pnl_add_postbuild(pricing_server)
 
+# Ajout d'un exécutable pour tester le pricer
+add_executable(test_pricer test_pricer.cpp pricer.cpp)
+target_link_libraries(test_pricer
+    ${PNL_LIBRARIES}
+    nlohmann_json::nlohmann_json
+)
+pnl_add_postbuild(test_pricer)
+
+
 add_executable(test_json_reader json_reader.cpp test_json_reader.cpp)
 target_link_libraries(test_json_reader
     ${PNL_LIBRARIES}

@@ -3,39 +3,33 @@
 #include "pricer.hpp"
 
 BlackScholesPricer::BlackScholesPricer(nlohmann::json &jsonParams) {
-    jsonParams.at("VolCholeskyLines").get_to(volatility);
+
+    // jsonParams.at("SampleNb").get_to(nSamples);
+    // rng = pnl_rng_create(PNL_RNG_MERSENNE);
+    // pnl_rng_sseed(rng, time(NULL));
+    // option = instance_option(jsonParams); 
     jsonParams.at("MathPaymentDates").get_to(paymentDates);
-    jsonParams.at("Strikes").get_to(strikes);
-    jsonParams.at("DomesticInterestRate").get_to(interestRate);
-    jsonParams.at("RelativeFiniteDifferenceStep").get_to(fdStep);
-    jsonParams.at("SampleNb").get_to(nSamples);
-    nAssets = volatility->n;
-    G = pnl_vect_create(nAssets);
+    jsonParams.at("sample number").get_to(nSamples);
+    model = new BlackScholesModel(jsonParams);
+    option = instance_option(jsonParams);
     rng = pnl_rng_create(PNL_RNG_MERSENNE);
     pnl_rng_sseed(rng, time(NULL));
-    option = instance_option(jsonParams); 
 }
+
 
 BlackScholesPricer::~BlackScholesPricer() {
+    // pnl_vect_free(&G);
+    // pnl_vect_free(&strikes);
+    // pnl_mat_free(&volatility);
+    // pnl_rng_free(&rng);
+    // delete option ; 
+
     pnl_vect_free(&paymentDates);
-    pnl_vect_free(&G);
-    pnl_vect_free(&strikes);
-    pnl_mat_free(&volatility);
     pnl_rng_free(&rng);
-    delete option ; 
+    delete model;
+    delete option;
 }
 
-void BlackScholesPricer::print() {
-    std::cout << "nAssets: " << nAssets << std::endl;
-    std::cout << "fdStep: " << fdStep << std::endl;
-    std::cout << "nSamples: " << nSamples << std::endl;
-    std::cout << "strikes: ";
-    pnl_vect_print_asrow(strikes);
-    std::cout << "paymentDates: ";
-    pnl_vect_print_asrow(paymentDates);
-    std::cout << "volatility: ";
-    pnl_mat_print(volatility);
-}
 
 void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate, double &price, double &priceStdDev, PnlVect* &deltas, PnlVect* &deltasStdDev) {
     
@@ -82,7 +76,9 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     pnl_mat_free(&path);
 }
 
+void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, bool isMonitoringDate, double &price, double &priceStdDev, PnlVect* &deltas, PnlVect* &deltasStdDev) {
 
+<<<<<<< HEAD
 void BlackScholesPricer::end_of_calcul_price(double &price, double &price_stdev, double t) const
 {
     double r = interestRate;
@@ -126,30 +122,33 @@ void BlackScholesPricer::shift_asset(int d, double lastIndex, double h, PnlMat *
         MLET(path, i, d) *= h;
     };
 }
+    // int D = this->option->size;
+    // int M = this->nSamples;
+    // int N = this->fixing_dates_number;
+    // double h = this->fd_step;
+    // double r = this->model->interest_rate;
+    // double T = this->option->maturity;
 
-void BlackScholesPricer::asset(PnlMat *path, PnlRng *rng, double creationDate)
-{
-    int D = this->nAssets;
-    double r = this->interestRate;
-    // pnl_mat_set_row(path, spots, 0);
-    int date_number = paymentDates->size;
-    double tm = creationDate;
+    // price = 0.0;
 
-    for (int i = 0; i < date_number; i++)
-    {
-        pnl_vect_rng_normal(G, D, rng);
-        for (int d = 0; d < D; d++)
-        {
-            PnlVect L_d = pnl_vect_wrap_mat_row(volatility, d);
-            double sigma_d = pnl_vect_norm_two(&L_d);
-            double time_step = GET(paymentDates, i) - tm;
-            MLET(path, i, d) = MGET(path, i - 1, d) * exp((r - sigma_d * sigma_d / 2.0) * (time_step) + sigma_d * sqrt(time_step) * pnl_vect_scalar_prod(&L_d, G));
-            tm =  GET(paymentDates, i);
-        }
-    }
-}
+//     PnlMat *matrix = pnl_mat_create(N + 1, D);
 
-void BlackScholesPricer::asset(const PnlMat *past, double t, bool isMonitoringDate, PnlMat *path, PnlRng *rng)
+//     for (int i = 0; i < M; i++)
+//     {
+//         this->model->asset(Past, t, T, matrix, this->rng);
+//         double phi_j = this->option->payOff(matrix);
+//         price += phi_j;
+
+//     }
+
+//     end_of_calcul_price(price, price_std, t);
+//     PnlVect St = pnl_vect_wrap_mat_row(Past, Past->m - 1);
+
+//     pnl_mat_free(&matrix);
+
+// }
+
+void MonteCarlo::end_of_calcul_price(double &price, double &price_stdev, double t) const
 {
     int D = this->nAssets;
     double r = this->interestRate;
@@ -194,4 +193,10 @@ void BlackScholesPricer::asset(const PnlMat *past, double t, bool isMonitoringDa
             MLET(path, i, d) = s_t_d * exp((r - sigma_d * sigma_d / 2.0) * time_step + sigma_d * sqrt(time_step) * pnl_vect_scalar_prod(&L_d, G));
         }
     }
+    // double r = model->interest_rate;
+    // double T = option->maturity;
+    // double M = sample_number;
+    // price = std::exp(-r * (T - t)) * price / M;
+    // price_stdev = price_stdev * std::exp(-2.0 * r * (T - t)) / M - price * price;
+    // price_stdev = std::sqrt(price_stdev / M);
 }
