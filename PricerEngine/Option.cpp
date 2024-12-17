@@ -11,7 +11,7 @@ Option::Option()
 {
 }
 
-Option::Option(const nlohmann::json json)
+Option::Option(const nlohmann::json &json)
 {
     json.at("Strikes").get_to(strike);
     json.at("MathPaymentDates").get_to(paymentDate);
@@ -26,7 +26,7 @@ Option::~Option()
 }
 
 
-Option *instance_option(const nlohmann::json json)
+Option *instance_option(const nlohmann::json &json)
 {
     Option *opt = NULL;
     string optionType;

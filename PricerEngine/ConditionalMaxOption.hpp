@@ -9,7 +9,7 @@ class ConditionalMaxOption : public Option
 public:
     ConditionalMaxOption();
     ~ConditionalMaxOption();
-    ConditionalMaxOption(const nlohmann::json json);
+    ConditionalMaxOption(const nlohmann::json &json);
     double payOff(const PnlMat *matrix) override;
 };
 

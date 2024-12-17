@@ -4,7 +4,7 @@
 #include <iostream>
 #include "pnl/pnl_vector.h"
 #include "pnl/pnl_matrix.h"
-#include "json_helper.hpp"
+#include "json_reader.hpp"
 
 class Option
 {
@@ -18,12 +18,12 @@ public:
     /**
      * Constructeur de parsing :
      */
-    Option(const nlohmann::json json );
+    Option(const nlohmann::json &json );
 
     /**
      * Destructeur
      */
-    virtual ~Option() {};
+    virtual ~Option() ;
 
     /**
      * Calcule la valeur du payoff
@@ -37,6 +37,6 @@ public:
 /**
  * return la classe de l'option selon OptionType
  */
-extern Option *instance_option(const nlohmann::json json);
+extern Option *instance_option(const nlohmann::json &json);
 
 #endif

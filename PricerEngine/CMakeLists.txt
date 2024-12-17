@@ -81,7 +81,7 @@ target_link_libraries(pricer_grpc_proto
     ${_PROTOBUF_LIBPROTOBUF}
 )
 
-add_executable(pricing_server pricing_server.cpp pricer.cpp json_reader.cpp )
+add_executable(pricing_server pricing_server.cpp pricer.cpp json_reader.cpp BlackScholesModel.cpp ConditionalBasketOption.cpp ConditionalMaxOption.cpp Option.cpp)
 target_link_libraries(pricing_server
     pricer_grpc_proto
     ${_REFLECTION}
@@ -93,7 +93,7 @@ target_link_libraries(pricing_server
 pnl_add_postbuild(pricing_server)
 
 # Ajout d'un exécutable pour tester le pricer
-add_executable(test_pricer test_pricer.cpp pricer.cpp)
+add_executable(test_pricer test_pricer.cpp pricer.cpp json_reader.cpp BlackScholesModel.cpp ConditionalBasketOption.cpp ConditionalMaxOption.cpp Option.cpp)
 target_link_libraries(test_pricer
     ${PNL_LIBRARIES}
     nlohmann_json::nlohmann_json

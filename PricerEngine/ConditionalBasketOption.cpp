@@ -4,7 +4,7 @@ ConditionalBasketOption::ConditionalBasketOption()
 {
 }
 
-ConditionalBasketOption::ConditionalBasketOption(const nlohmann::json json) : Option(json)
+ConditionalBasketOption::ConditionalBasketOption(const nlohmann::json &json) : Option(json)
 {
 
 }
@@ -17,10 +17,14 @@ ConditionalBasketOption::~ConditionalBasketOption()
 double ConditionalBasketOption::payOff(const PnlMat *matrix)
 {
     double payOff = 0.;
+    // TODO : r ? 
+    // double facteur = std::exp(r*(GET(paymentDate , paymentDate->size - 1) - GET(paymentDate , m))) ; 
+
     for (size_t m = 0; m < matrix->m; m++)
     {
         double Pm = 0.;
         PnlVect valSoujacent = pnl_vect_wrap_mat_row(matrix, m);
+        // Pm = pnl_vect_sum(&valSoujacent)*facteur;
         Pm = pnl_vect_sum(&valSoujacent);
         int N = valSoujacent.size;
         Pm = std::max(1/(double)N *Pm - GET(strike, m), 0.);

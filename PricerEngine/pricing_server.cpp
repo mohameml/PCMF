@@ -57,6 +57,7 @@ public:
         if (past == NULL) {
             return Status(grpc::StatusCode::INVALID_ARGUMENT, "Cannot read past");
         }
+        std::cout << "========== t = " << input->time() << "===========" << std::endl ; 
         pnl_mat_print(past);
         pricer.priceAndDeltas(past, currentDate, isMonitoringDate, price, priceStdDev, delta, deltaStdDev);
         output->set_price(price);
@@ -72,7 +73,7 @@ public:
     }
 
     Status Heartbeat(ServerContext *context, const Empty* input, ReqInfo *output) override {
-        output->set_domesticinterestrate(pricer.interestRate);
+        output->set_domesticinterestrate(pricer.model->interestRate);
         output->set_relativefinitedifferencestep(pricer.fdStep);
         output->set_samplenb(pricer.nSamples);
         return Status::OK;

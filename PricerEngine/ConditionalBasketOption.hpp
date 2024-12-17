@@ -9,7 +9,7 @@ class ConditionalBasketOption : public Option
 public:
     ConditionalBasketOption();
     ~ConditionalBasketOption();
-    ConditionalBasketOption(const nlohmann::json json);
+    ConditionalBasketOption(const nlohmann::json &json);
     double payOff(const PnlMat *matrix) override;
 };
 
