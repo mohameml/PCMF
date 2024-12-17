@@ -57,10 +57,10 @@ int main(int argc, char *argv[]) {
 
     PnlMat* past = pnl_mat_create_from_list(1 , pricer->model->nAssets , 13.00 , 15.00 , 17.00 ,17.00 ,14.00);
 
-    pricer->priceAndDeltas(past , 0. , false , price , priceStdDev , Deltas , DeltasStdDev);
+    pricer->priceAndDeltas(past , 0. , true , price , priceStdDev , Deltas , DeltasStdDev);
 
     std::cout << "price = " << price << std::endl ;
-    std::cout << "priceStdDev = " << price << std::endl ;
+    std::cout << "priceStdDev = " << priceStdDev << std::endl ;
     std::cout << "Deltas = " ;
     pnl_vect_print_asrow(Deltas);
     std::cout << "DeltasStdDev  = " ;

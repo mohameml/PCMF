@@ -16,27 +16,23 @@ ConditionalBasketOption::~ConditionalBasketOption()
 
 double ConditionalBasketOption::payOff(const PnlMat *matrix)
 {
-    double payOff = 0.;
-    // TODO : r ? 
-    // double facteur = std::exp(r*(GET(paymentDate , paymentDate->size - 1) - GET(paymentDate , m))) ; 
+    double T = GET(paymentDate , paymentDate->size - 1);
 
-    for (size_t m = 0; m < matrix->m; m++)
+    for (size_t m = 1 ; m < matrix->m; m++)
     {
-        double Pm = 0.;
         PnlVect valSoujacent = pnl_vect_wrap_mat_row(matrix, m);
-        // Pm = pnl_vect_sum(&valSoujacent)*facteur;
-        Pm = pnl_vect_sum(&valSoujacent);
+        double facteur = std::exp(intersertRate*(T - GET(paymentDate , m - 1))) ; 
+        double Pm = pnl_vect_sum(&valSoujacent)*facteur;
         int N = valSoujacent.size;
-        Pm = std::max(1/(double)N *Pm - GET(strike, m), 0.);
+        Pm = std::max(1/(double)N *Pm - GET(strike, m - 1), 0.);
 
-        if(payOff == 0.)
+        if(fabs(Pm) > 10E-10)
         {
-            payOff += Pm;
+            return Pm ;
         }
         
     }
 
-    return payOff;
-    
+    return 0.0 ; 
 
 }

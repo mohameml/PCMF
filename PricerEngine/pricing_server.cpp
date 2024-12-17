@@ -66,6 +66,15 @@ public:
             output->add_deltas(GET(delta, i));
             output->add_deltasstddev(GET(deltaStdDev, i));
         }
+        std::cout << "===== output ======"  << std::endl ; 
+        
+        std::cout << "price = " << price << std::endl ;
+        std::cout << "priceStdDev = " << priceStdDev << std::endl ;
+        std::cout << "Deltas = " ;
+        pnl_vect_print_asrow(delta);
+        std::cout << "DeltasStdDev  = " ;
+        pnl_vect_print_asrow(deltaStdDev);
+        
         pnl_mat_free(&past);
         pnl_vect_free(&delta);
         pnl_vect_free(&deltaStdDev);

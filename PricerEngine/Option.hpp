@@ -12,6 +12,7 @@ public:
     PnlVect *strike;
     PnlVect *paymentDate; // dates de versement 
     PnlVect *payment;
+    double intersertRate ; 
 
 public:
     Option();

@@ -15,6 +15,7 @@ Option::Option(const nlohmann::json &json)
 {
     json.at("Strikes").get_to(strike);
     json.at("MathPaymentDates").get_to(paymentDate);
+    json.at("DomesticInterestRate").get_to(intersertRate);
     payment = pnl_vect_create_from_zero(paymentDate->size);
 
 }

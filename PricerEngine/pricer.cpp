@@ -91,7 +91,7 @@ void BlackScholesPricer::end_of_calcul_price(double &price, double &price_stdev,
     double M = nSamples;
     price = std::exp(-r * (T - t)) * price / M;
     price_stdev = price_stdev * std::exp(-2.0 * r * (T - t)) / M - price * price;
-    price_stdev = std::sqrt(price_stdev / M);
+    price_stdev = std::sqrt(fabs(price_stdev) / M);
 }
 
 void BlackScholesPricer::end_of_calcul_delta(PnlVect *delta, PnlVect *delta_stdev, double t, PnlVect *St) const

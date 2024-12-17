@@ -34,7 +34,8 @@ namespace HedgingEngine.Hedging {
 
             
             List<DataFeed> past = [dataFeeds[0]];
-            bool monitoringDate = FinancialParam.PayoffDescription.PaymentDates.Contains(dataFeeds[0].Date) ; 
+            // FinancialParam.PayoffDescription.PaymentDates.Contains(dataFeeds[0].Date)
+            bool monitoringDate = true ; 
             double timeMath = converter.ConvertToMathDistance(FinancialParam.PayoffDescription.CreationDate, dataFeeds[0].Date);
             PricingParams pricerParams = new(past ,timeMath , monitoringDate) ; 
             
@@ -53,7 +54,7 @@ namespace HedgingEngine.Hedging {
             };
             List<OutputData> listOutput = [output0] ; 
 
-            List<DataFeed> hedgingPast  = new();
+            List<DataFeed> hedgingPast  = [dataFeeds[0]];
 
 
             double r =  FinancialParam.AssetDescription.CurrencyRates[FinancialParam.AssetDescription.DomesticCurrencyId];

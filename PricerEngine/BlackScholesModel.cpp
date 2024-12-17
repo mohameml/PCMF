@@ -40,17 +40,10 @@ void BlackScholesModel::asset(const PnlMat *past, double t, bool isMonitoringDat
 {
     int D = this->nAssets;
     double r = this->interestRate;
-    int last_index ; 
-    if(t == 0.0) {
-        last_index = 0 ;
-    } else {
-        last_index = isMonitoringDate ? past->m - 1 : past->m - 2;
-    }
-
+    int last_index = isMonitoringDate ? past->m - 1 : past->m - 2 ; 
 
     if (last_index == path->m - 1)
     {
-        // pnl_mat_set_subblock(path, past, 0, 0);
         pnl_mat_extract_subblock(path, past, 0, path->m, 0, path->n);
         return;
     }
@@ -59,14 +52,14 @@ void BlackScholesModel::asset(const PnlMat *past, double t, bool isMonitoringDat
     pnl_mat_set_subblock(path, past, 0, 0);
 
     pnl_vect_rng_normal(G, D, rng);
-    double dt = GET(paymentDates, last_index + 1) - t;
+    double dt = GET(paymentDates, last_index ) - t;
 
     for (int d = 0; d < D; d++)
     {
-        double s_t_d = MGET(past, past->m - 1, d);
         PnlVect L_d = pnl_vect_wrap_mat_row(volatility, d);
         double sigma_d = GET(vectVol,d);
-        MLET(path, last_index + 1, d) = s_t_d * exp((r - sigma_d * sigma_d / 2.0) * dt + sigma_d * sqrt(dt) * pnl_vect_scalar_prod(&L_d, G));
+        double s_t_d = MGET(past, past->m - 1, d);
+        MLET(path, last_index + 1 , d) = s_t_d * exp((r - sigma_d * sigma_d / 2.0) * dt + sqrt(dt) * pnl_vect_scalar_prod(&L_d, G));
     }
 
 
@@ -74,13 +67,13 @@ void BlackScholesModel::asset(const PnlMat *past, double t, bool isMonitoringDat
     {
         pnl_vect_rng_normal(G, D, rng);
 
+        double time_step = GET(paymentDates, i - 1) - GET(paymentDates, i - 2);
         for (int d = 0; d < D; d++)
         {
-            double s_t_d = MGET(path, i - 1, d);
             PnlVect L_d = pnl_vect_wrap_mat_row(volatility, d);
             double sigma_d = GET(vectVol,d);
-            double time_step = GET(paymentDates, i) - GET(paymentDates, i-1);
-            MLET(path, i, d) = s_t_d * exp((r - sigma_d * sigma_d / 2.0) * time_step + sigma_d * sqrt(time_step) * pnl_vect_scalar_prod(&L_d, G));
+            double s_t_d = MGET(path, i - 1, d);
+            MLET(path, i, d) = s_t_d * exp((r - sigma_d * sigma_d / 2.0) * time_step +  sqrt(time_step) * pnl_vect_scalar_prod(&L_d, G));
         }
     }
 }
