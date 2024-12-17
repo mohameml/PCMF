@@ -29,8 +29,10 @@ namespace HedgingEngine.Hedging {
 
         public List<OutputData> Hedge(List<DataFeed> dataFeeds) {
 
+
             MathDateConverter converter = new(FinancialParam.NumberOfDaysInOneYear);
 
+            
             List<DataFeed> past = [dataFeeds[0]];
             bool monitoringDate = FinancialParam.PayoffDescription.PaymentDates.Contains(dataFeeds[0].Date) ; 
             double timeMath = converter.ConvertToMathDistance(FinancialParam.PayoffDescription.CreationDate, dataFeeds[0].Date);
@@ -51,16 +53,27 @@ namespace HedgingEngine.Hedging {
             };
             List<OutputData> listOutput = [output0] ; 
 
+            List<DataFeed> hedgingPast  = new();
+
+
             double r =  FinancialParam.AssetDescription.CurrencyRates[FinancialParam.AssetDescription.DomesticCurrencyId];
             double time  ;
             double value ;
 
             foreach (DataFeed feed in dataFeeds.Skip(1))
             {
-                // TODO : past doit continet que les St0 , ... Stm , St
-                past.Add(feed);
+
                 timeMath = converter.ConvertToMathDistance(FinancialParam.PayoffDescription.CreationDate , feed.Date);
                 monitoringDate = FinancialParam.PayoffDescription.PaymentDates.Contains(feed.Date);
+
+                if(monitoringDate) {
+                    hedgingPast.Add(feed);
+                    past = new List<DataFeed>(hedgingPast);
+                } else {
+                    past = new List<DataFeed>(hedgingPast);
+                    past.Add(feed);
+                }
+                
                 pricerParams.SetParams(past , timeMath , monitoringDate);
 
                 results = Pricer.PriceAndDeltas(pricerParams);
