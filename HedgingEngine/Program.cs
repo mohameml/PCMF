@@ -33,9 +33,9 @@ namespace HedgingEngine {
                 Environment.Exit(1);
             }
             
-            List<DataFeed> data = MarketDataReader.ReadDataFeeds(args[0]);            
+            List<DataFeed> data = MarketDataReader.ReadDataFeeds(args[1]);            
 
-            string jsonString = File.ReadAllText(args[1]); 
+            string jsonString = File.ReadAllText(args[0]); 
             TestParameters financialParam = JsonIO.FromJson(jsonString);
 
             Hedging.Hedging hedger = new(financialParam);

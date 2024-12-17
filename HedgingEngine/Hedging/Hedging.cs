@@ -56,6 +56,7 @@ namespace HedgingEngine.Hedging {
 
             foreach (DataFeed feed in dataFeeds.Skip(1))
             {
+                // TODO : past doit continet que les St0 , ... Stm , St
                 past.Add(feed);
                 timeMath = converter.ConvertToMathDistance(FinancialParam.PayoffDescription.CreationDate , feed.Date);
                 monitoringDate = FinancialParam.PayoffDescription.PaymentDates.Contains(feed.Date);

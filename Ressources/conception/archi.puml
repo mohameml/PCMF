@@ -2,50 +2,28 @@
 
 
 
-package Convertisseur {
-    interface IConvertisseurFile {
-        + protected abstract string Chemin
-    }
 
-    class CsvToListDataFeed {
-        + List<DataFeed> ConverteCSVToListDataFeed()
-    }
+' package MultiCashFlowCommon  {
 
-    class JsonToTestParams {
-        + ConverteJSONToParameters()
-    }
+'     class DataFeed {
+'         +  Dictionary<string, double> PriceList 
+'         + DateTime Date 
+'     }
 
-    class ListOuputToJson  {
-        + ConverteListOuputToJSON()
-    }
+'     class OutputData {
+'         + DateTime Date
+'         + double Value
+'         + Double[] Deltas
+'         +  Double[] DeltasStdDev
+'         +  double Price
+'         + double PriceStdDev
+'     }
 
-    CsvToListDataFeed <|-- IConvertisseurFile 
-    JsonToTestParams <|-- IConvertisseurFile 
-    ListOuputToJson <|-- IConvertisseurFile 
-}
+'     class TestParameters {
 
+'     }
 
-package MultiCashFlowCommon  {
-
-    class DataFeed {
-        +  Dictionary<string, double> PriceList 
-        + DateTime Date 
-    }
-
-    class OutputData {
-        + DateTime Date
-        + double Value
-        + Double[] Deltas
-        +  Double[] DeltasStdDev
-        +  double Price
-        + double PriceStdDev
-    }
-
-    class TestParameters {
-
-    }
-
-}
+' }
 
 
 package HedginigEngine {
@@ -58,23 +36,37 @@ package HedginigEngine {
     }
 
 
-    class Pricer {
-        + GrpcPricingClient Client 
-        + double price 
-        + double[] deltas 
-        + double priceStdDev 
-        + double[] deltasStdDev
-        + PriceAndDeltas(DataFeed[] past , bool monitoringDateReached , DataTime time ) : Client.GrpcClient.PriceAndDeltas(pricingInput)    
-        + CastingListDataFeedToPastLines()
+    abstract class Pricer {
+        + TestParameters Params
+        + abstract PricingResults PriceAndDeltas(PricingParams pricingParams ) 
     }
 
-    class GrpcPricingClient {
-        +  GrpcChannel Channel 
-        + GrpcPricerClient GrpcClient
-        + GrpcPricingClient(string address) : GrpcClient = new GrpcPricer.GrpcPricerClient(Channel);    
+    class PricingParams {
+        +  List<DataFeed> DataFeeds
+        + double Time 
+        + bool MonitoringDate
     }
 
-    Pricer o-- GrpcPricingClient
+    class  PricingResults {
+        + Dictionary<string , double> Deltas 
+        + Dictionary<string , double> DeltasStdDev 
+        + double Price 
+        + double PriceStdDev 
+    }  
+
+    Pricer o-- PricingParams
+    Pricer o-- PricingResults
+
+
+    class PricerGrpc {
+        - GrpcPricer.GrpcPricerClient GrpcClient
+        + PricerGrpc(TestParameters testParameters , string adress)
+        + override PricingResults PriceAndDeltas(PricingParams pricingParams)
+
+    }
+
+    Pricer <|-- PricerGrpc 
+
 
     abstract class  Rebalacing  {
         + bool IsRebalancing(DateTime date)
@@ -192,11 +184,7 @@ package PricerEngine {
 }
 
 
-Convertisseur -- MultiCashFlowCommon : Conversion des données JSON et CSV vers des classes de MultiCashFlowCommon 
-
-HedginigEngine -- MultiCashFlowCommon 
-
-GrpcPricingClient -- Grpc : Grpc Client 
+PricerGrpc -- Grpc :  Grpc Client 
 
 PrcingServer -- Grpc : Grpc Server 
 
