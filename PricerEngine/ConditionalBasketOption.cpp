@@ -22,11 +22,11 @@ double ConditionalBasketOption::payOff(const PnlMat *matrix)
     {
         PnlVect valSoujacent = pnl_vect_wrap_mat_row(matrix, m);
         double facteur = std::exp(intersertRate*(T - GET(paymentDate , m - 1))) ; 
-        double Pm = pnl_vect_sum(&valSoujacent)*facteur;
         int N = valSoujacent.size;
-        Pm = std::max(1/(double)N *Pm - GET(strike, m - 1), 0.);
+        double Pm = pnl_vect_sum(&valSoujacent)/(double)N;
+        Pm = std::max(Pm - GET(strike, m - 1), 0.)*facteur;
 
-        if(fabs(Pm) > 10E-10)
+        if(fabs(Pm) > 1e-10)
         {
             return Pm ;
         }

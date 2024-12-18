@@ -55,7 +55,8 @@ int main(int argc, char *argv[]) {
     PnlVect* Deltas = pnl_vect_create_from_zero(pricer->model->nAssets);
     PnlVect* DeltasStdDev = pnl_vect_create_from_zero(pricer->model->nAssets);
 
-    PnlMat* past = pnl_mat_create_from_list(1 , pricer->model->nAssets , 13.00 , 15.00 , 17.00 ,17.00 ,14.00);
+    // Max_5_3_1_mkt_data.csv
+    PnlMat* past = pnl_mat_create_from_list(1 , pricer->model->nAssets , 17.00 , 20.00 , 15.00 ,14.00 ,13.00);
 
     pricer->priceAndDeltas(past , 0. , true , price , priceStdDev , Deltas , DeltasStdDev);
 

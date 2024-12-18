@@ -66,7 +66,6 @@ public:
             output->add_deltas(GET(delta, i));
             output->add_deltasstddev(GET(deltaStdDev, i));
         }
-        std::cout << "===== output ======"  << std::endl ; 
         
         std::cout << "price = " << price << std::endl ;
         std::cout << "priceStdDev = " << priceStdDev << std::endl ;

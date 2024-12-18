@@ -16,24 +16,29 @@ ConditionalMaxOption::~ConditionalMaxOption()
 
 double ConditionalMaxOption::payOff(const PnlMat *matrix)
 {
+    double T = GET(paymentDate , paymentDate->size - 1) ; 
     double payOff = 0.;
-    // TODO : r ? 
-    // double facteur = std::exp(r*(GET(paymentDate , paymentDate->size - 1) - GET(paymentDate , m))) ; 
-
     double p_prec = 0.;
-    for (size_t m = 0; m < matrix->m; m++)
-    {
-        double Pm = 0.;
-        PnlVect valSoujacent = pnl_vect_wrap_mat_row(matrix, m);
-        // Pm = pnl_vect_max(&valSoujacent)*facteur;
-        Pm = pnl_vect_max(&valSoujacent);
-        Pm = std::max(Pm - GET(strike, m), 0.);
 
-        if(p_prec == 0.)
-        {
-            payOff += Pm;
-        }
-        p_prec = Pm;
+    for (size_t m = 1 ; m < matrix->m; m++)
+    {
+        PnlVect valSoujacent = pnl_vect_wrap_mat_row(matrix, m);
+        double Pm = pnl_vect_max(&valSoujacent); 
+        int is_prec_null = p_prec == 0.0 ? 1 : 0;
+        Pm = std::max(Pm - GET(strike, m - 1), 0.) *(double (is_prec_null));
+
+        double facteur = std::exp(intersertRate*(T - GET(paymentDate , m - 1))) ; 
+        payOff += Pm*facteur;
+        p_prec = Pm ; 
+
+        // if(fabs(p_prec) < 1e-10)
+        // {
+        //     p_prec = 0.0 ;
+        // } else {
+
+        //     p_prec = Pm;
+        // }
+
         
     }
 

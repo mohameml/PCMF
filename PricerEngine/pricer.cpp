@@ -47,10 +47,10 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
 
     int D = model->nAssets;
     int M = this->nSamples;
-    int N = option->strike->size;
+    int N = option->strike->size ;
     double h = fdStep;
     double r = model->interestRate;
-    double lastIndex = isMonitoringDate ? past->m - 1 : past->m - 2 ; 
+    int  lastIndex = isMonitoringDate ? past->m - 1 : past->m - 2 ; 
 
 
     PnlMat *path = pnl_mat_create(N + 1, D);
@@ -88,7 +88,7 @@ void BlackScholesPricer::end_of_calcul_price(double &price, double &price_stdev,
 {
     double r = model->interestRate;
     double T = GET(paymentDates , paymentDates->size -1 ) ;
-    double M = nSamples;
+    double M = (double)nSamples;
     price = std::exp(-r * (T - t)) * price / M;
     price_stdev = price_stdev * std::exp(-2.0 * r * (T - t)) / M - price * price;
     price_stdev = std::sqrt(fabs(price_stdev) / M);
@@ -96,7 +96,7 @@ void BlackScholesPricer::end_of_calcul_price(double &price, double &price_stdev,
 
 void BlackScholesPricer::end_of_calcul_delta(PnlVect *delta, PnlVect *delta_stdev, double t, PnlVect *St) const
 {
-    double M = nSamples;
+    double M = (double)nSamples;
     double r = model->interestRate;
     double T = GET(paymentDates , paymentDates->size -1 ) ; 
 
