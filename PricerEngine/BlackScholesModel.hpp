@@ -31,7 +31,7 @@ public:
      * @param[in] t  :  temps actuel
      * @param[in] rng : génerateur des nombres aléatoires
      */
-    void asset(const PnlMat *past, double t, bool isMonitoringDate, PnlMat *path, PnlRng *rng);
+    void asset(const PnlMat *past, double t, int last_index, PnlMat *path, PnlRng *rng);
 
     /**
      * simuler 2 trajectoires utilisant les mêmes aléas Browniens mais shiftées l’une par rapport à l’autre

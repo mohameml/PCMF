@@ -43,21 +43,24 @@ void BlackScholesPricer::priceAndDeltas(const PnlMat *past, double currentDate, 
     priceStdDev = 0.;
     deltas = pnl_vect_create_from_zero(model->nAssets);
     deltasStdDev = pnl_vect_create_from_zero(model->nAssets);
-    /* A compléter */
 
     int D = model->nAssets;
     int M = this->nSamples;
     int N = option->strike->size ;
     double h = fdStep;
     double r = model->interestRate;
-    int  lastIndex = isMonitoringDate ? past->m - 1 : past->m - 2 ; 
+    int lastIndex =  isMonitoringDate ? past->m - 1 : past->m - 2  ;
+    if(currentDate == 0.) {
+        lastIndex = 0; 
+    }
+
 
 
     PnlMat *path = pnl_mat_create(N + 1, D);
 
     for (int i = 0; i < M; i++)
     {
-        model->asset(past, currentDate , isMonitoringDate , path, rng);
+        model->asset(past, currentDate , lastIndex , path, rng);
         double phi_j = option->payOff(path);
         price += phi_j;
         priceStdDev += phi_j * phi_j;

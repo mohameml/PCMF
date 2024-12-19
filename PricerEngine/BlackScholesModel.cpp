@@ -36,11 +36,11 @@ BlackScholesModel::~BlackScholesModel()
 }
 
 
-void BlackScholesModel::asset(const PnlMat *past, double t, bool isMonitoringDate, PnlMat *path, PnlRng *rng)
+void BlackScholesModel::asset(const PnlMat *past, double t,int last_index , PnlMat *path, PnlRng *rng)
 {
     int D = this->nAssets;
     double r = this->interestRate;
-    int last_index = isMonitoringDate ? past->m - 1 : past->m - 2 ; 
+    // int last_index = isMonitoringDate ? past->m - 1 : past->m - 2 ; 
 
     if (last_index == path->m - 1)
     {

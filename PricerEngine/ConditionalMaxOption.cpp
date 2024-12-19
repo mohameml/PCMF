@@ -31,15 +31,6 @@ double ConditionalMaxOption::payOff(const PnlMat *matrix)
         payOff += Pm*facteur;
         p_prec = Pm ; 
 
-        // if(fabs(p_prec) < 1e-10)
-        // {
-        //     p_prec = 0.0 ;
-        // } else {
-
-        //     p_prec = Pm;
-        // }
-
-        
     }
 
     return payOff;
